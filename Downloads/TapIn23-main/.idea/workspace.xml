@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e4677fce-ff74-40d6-8ee7-1fb954d8c82c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Tapped-public_chat_demo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Tapped-public_chat_demo.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/controller/ContactController.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controller/ContactController.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/controller/PrivateChatController.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controller/PrivateChatController.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/chatPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/chatPage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/contacts_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/contacts_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/request/requestPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/request/requestPage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils/image_select.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/image_select.dart" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2XIbl8MKCycLRgKNbT6SXT3GPlO" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;ScreenshotViewer.SavePath&quot;: &quot;/Users/mac/Desktop&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Volumes/Data/clients/hodanmo15/new code by dev after chat fixes/Tapped-public_chat_demo/lib/pages&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;flutter.settings&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/pages" />
+      <recent name="$PROJECT_DIR$/lib/controller" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e4677fce-ff74-40d6-8ee7-1fb954d8c82c" name="Changes" comment="" />
+      <created>1698319689138</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1698319689138</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

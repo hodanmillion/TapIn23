@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "633144234805",
+    "project_id": "tappedin-95539",
+    "storage_bucket": "tappedin-95539.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633144234805:android:2d8e565cc206ef6d11b27c",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633144234805-db1m8h9ks4pe0evflnnkj3i48hvioke7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbFTsGCLHScI9CckuPCYSNicQY42zuPZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633144234805-db1m8h9ks4pe0evflnnkj3i48hvioke7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
