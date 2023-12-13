@@ -393,6 +393,7 @@ void _showLocationWarningDialog(BuildContext context) {
   );
 }
 
+
   Widget _buildMessageInput(BuildContext context) {
     final controller = Get.find<ChatController>();
 
