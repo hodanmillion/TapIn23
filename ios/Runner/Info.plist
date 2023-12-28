@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>TapIn</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>TapIn</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.4.4</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.633144234805-jeopfdggnb0csa4l5uc01npt1urjiqr4</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-633144234805-ios-84e0f29978b2624e11b27c</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle ID</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.TappedIn.myapp</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>6</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Access to your camera is required to enable you to capture and share photos or videos within the app. The app will only use your camera for the purpose of creating and sharing content. We respect your privacy and do not capture or share media without your consent.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Access to your contacts is needed to simplify your experience by enabling you to connect with friends and colleagues effortlessly. The app will only access your contacts for the purpose of inviting friends, sharing content, and enhancing your social interactions within the app. We respect your privacy and do not share your contact information with any third parties.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location access is required for continuous real-time updates of your friend&apos;s locations, even when the app is in the background. This ensures that you can always connect with your friends and receive location-based alerts, like when a friend is nearby or sends you a message. Your location data is kept secure and is never shared with anyone outside your friends, guaranteeing your privacy and safety.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location access is required for continuous real-time updates of your friend&apos;s locations, even when the app is in the background. This ensures that you can always connect with your friends and receive location-based alerts, like when a friend is nearby or sends you a message. Your location data is kept secure and is never shared with anyone outside your friends, guaranteeing your privacy and safety.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is used to enable real-time, location-based messaging with your friends. We use your location to show you nearby friends and help you connect with them. For example, you can see friends who are close to you on the map and chat with them to arrange meetups or stay in touch. Your location data is never shared with anyone outside your friends, ensuring your privacy and safety.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To select and upload photos from your library for profile customization and sharing with friends. This allows you to easily set a unique profile picture and share memories with others. For instance, you can select a photo from your library to use as your profile picture, making it easier for your friends to recognize you within the app.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIStatusBarStyle</key>
+	<string></string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>
