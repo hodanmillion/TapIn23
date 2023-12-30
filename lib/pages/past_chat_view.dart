@@ -36,6 +36,7 @@ class PastChatView extends GetView<PastChatListController> {
                   itemCount: controller.messagesList.length,
                   itemBuilder: (context, index) {
                     return MessageTile(
+                      senderid: controller.messagesList[index].senderId,
                       message: controller.messagesList[index].message,
                       sender: controller.messagesList[index].senderEmail,
                       sentByMe: controller.firebaseAuth.currentUser?.uid ==

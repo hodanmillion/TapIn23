@@ -60,14 +60,13 @@ class FireBaseNoti {
     RemoteMessage? message,
   ) async {
     if (message == null) return;
-    Get.snackbar("one", "${message.data['receiverUserEmail']}\n${message.data['receiverUserID']}\n${message.data['senderId']}",snackPosition: SnackPosition.BOTTOM);
 
     print('app opend: ${message.data}');
-    List<String> params = [
-      message.data['receiverUserEmail'],
-      message.data['receiverUserID'],
-      message.data['senderId'],
-    ];
+    // List<String> params = [
+    //   message.data['receiverUserEmail'],
+    //   message.data['receiverUserID'],
+    //   message.data['senderId'],
+    // ];
     Map<String, String> param = {
       "receiverUserEmail":   message.data['receiverUserEmail'],
       "receiverUserID":  message.data['receiverUserID'],
@@ -75,9 +74,6 @@ class FireBaseNoti {
     };
 
     await Get.toNamed(PageConst.chatView, parameters: param);
-
-    AppSharedPrefs.setcartProductList(params);
-
   }
 
   //init foreground and background settings
@@ -91,7 +87,6 @@ class FireBaseNoti {
 
     FirebaseMessaging.onMessage.listen((message) {
       print('message');
-      Get.snackbar("two", "${message.data['receiverUserEmail']}\n${message.data['receiverUserID']}\n${message.data['senderId']}",snackPosition: SnackPosition.BOTTOM);
       // showNotification(message);
       return;
     });

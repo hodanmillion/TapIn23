@@ -30,7 +30,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
       final user = querySnapshot.docs.first;
       setState(() {
         _searchedUserId = user.id;
-        _searchedEmail = user.data()?['username'];
+        _searchedEmail = user.data()['username'];
       });
     } else {
       setState(() {
@@ -57,13 +57,13 @@ class _AddContactScreenState extends State<AddContactScreen> {
       return;
     }
 
-    bool isAlreadyAContact = await isUserAlreadyAContact(_searchedUserId!);
+/*    bool isAlreadyAContact = await isUserAlreadyAContact(_searchedUserId!);
     if (isAlreadyAContact) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('You are already friends with this user!')),
       );
       return;
-    }
+    }*/
 
     // Check for existing friend requests
     final existingRequestsQuerySender = await _firestore
@@ -107,8 +107,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
       // Check in the 'accepted_c' collection
       final existingContactSnapshot = await _firestore
-          .collection('accepted_c')
-          .where('userId', isEqualTo: currentUserUid)
+          .collection('accepted_c').doc(currentUserUid).collection("contacts")
           .where('contactId', isEqualTo: potentialContactId)
           .get();
 

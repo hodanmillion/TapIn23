@@ -38,8 +38,8 @@ class LocalNotification {
 
   Future _onDidReceiveLocalNotification(
       int? id, String? title, String? body, String? payload) async {}
-  Future _selectNotification(String? payload) async {
-    var data = jsonDecode(payload!);
+  Future _selectNotification(NotificationResponse? notificationResponse) async {
+    var data = jsonDecode(notificationResponse!.payload!);
     onNotificationClick(data);
   }
 
@@ -48,10 +48,10 @@ class LocalNotification {
     if (Platform.isIOS) {
       // set iOS Local notification.
       var initializationSettingsAndroid =
-          const AndroidInitializationSettings('ic_launcher');
+          const AndroidInitializationSettings('');
       // var initializationSettingsAndroid = const AndroidInitializationSettings('ic_launcher');
       /// this is for IOS
-      var initializationSettingsIOS = IOSInitializationSettings(
+      var initializationSettingsIOS = DarwinInitializationSettings(
         requestSoundPermission: true,
         requestBadgePermission: true,
         requestAlertPermission: true,
@@ -61,18 +61,18 @@ class LocalNotification {
           android: initializationSettingsAndroid,
           iOS: initializationSettingsIOS);
       await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-          onSelectNotification: (val) => _selectNotification(val));
+          onDidReceiveNotificationResponse: (val) => _selectNotification(val));
     } else {
       /// set Android Local notification.
       var initializationSettingsAndroid =
-          const AndroidInitializationSettings('ic_launcher');
-      var initializationSettingsIOS = IOSInitializationSettings(
+          const AndroidInitializationSettings('');
+      var initializationSettingsIOS = DarwinInitializationSettings(
           onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
       var initializationSettings = InitializationSettings(
           android: initializationSettingsAndroid,
           iOS: initializationSettingsIOS);
       await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-          onSelectNotification: (val) => _selectNotification(val));
+          onDidReceiveNotificationResponse: (val) => _selectNotification(val));
     }
   }
 
@@ -128,7 +128,7 @@ class LocalNotification {
       priority: Priority.max,
       styleInformation: inboxStyleInformation,
     );
-    var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
+    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails(
       presentSound: true,
       presentAlert: true,
       presentBadge: true,
@@ -147,10 +147,7 @@ class LocalNotification {
   Future<void> onNotificationClick(data) async {
 
 
-  AppSharedPrefs.notificationData.receiverUserEmail = data['receiverUserEmail'];
-  AppSharedPrefs.notificationData.receiverUserID = data['receiverUserID'];
-  AppSharedPrefs.notificationData.senderId = data['senderId'];
-  AppSharedPrefs.notificationData.isfriend = "true";
+
     Map<String, String> param = {
       "receiverUserEmail":   data['receiverUserEmail'],
       "receiverUserID":  data['receiverUserID'],

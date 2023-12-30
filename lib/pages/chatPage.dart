@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,6 +24,7 @@ import '../routes/app_route.dart';
 import '../utils/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:url_launcher/url_launcher.dart';
@@ -329,6 +331,7 @@ Widget build(BuildContext context) {
         physics: const BouncingScrollPhysics(),
         itemCount: reversedMessages.length,
         itemBuilder: (context, index) {
+
           return _buildMessageItem(reversedMessages[index],reversedMessagesId[index].isEmpty ? "" : reversedMessagesId[index] ,context);
         },
       );
@@ -443,7 +446,7 @@ Widget build(BuildContext context) {
                             : const Radius.circular(5),
                       ),
                     ),
-                    child: document.senderId == currentUserUid ? Column(
+                    child:  Column(
                       crossAxisAlignment: (document.senderId == currentUserUid)
                           ? CrossAxisAlignment.end
                           : CrossAxisAlignment.start,
@@ -470,260 +473,6 @@ Widget build(BuildContext context) {
                                   : Colors.black),
                         ),
 
-                      ],
-                    ) : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                    FutureBuilder(
-                          future: FirestoreDB().getUserData(document.senderId),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                                !snapshot.hasData) {
-                              return const SizedBox();
-                            } else if (snapshot.hasError) {
-                              return const Text('');
-                            }
-
-                            profileImage.value = snapshot.data?['proImage'] ?? '';
-
-                            final username = snapshot.data?['username'];
-                            return document.senderId == currentUserUid ? const SizedBox() :
-                                 GestureDetector(
-                                   onTap: () {
-                                     controller.emailP.value = (snapshot.data!['email'] as String?) ?? '';
-                                     controller.userNameP.value = snapshot.data!['username'] ?? '';
-                                     controller.userImageP.value = snapshot.data!['proImage'] ?? '';
-
-                                     Get.toNamed(PageConst.userPrivateProfilePage);
-                                   },
-                                   child: Container(
-                                     width: 40,
-                                     height: 40,
-                                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
-                                     child: Padding(
-                                       padding: const EdgeInsets.all(2.0),
-                                       child: Container(
-
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(25),
-                                image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: FirebaseImageProvider(
-                                            FirebaseUrl(snapshot.data?['proImage'])),
-                                ),
-                              ),
-                            ),
-                                     ),
-                                   ),
-                                 );
-                          },
-                        ),
-                        const SizedBox(width: 10,),
-                        Column(
-                          crossAxisAlignment: (document.senderId == currentUserUid)
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            FutureBuilder(
-                              future: FirestoreDB().getUserData(document.senderId),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting ||
-                                    !snapshot.hasData) {
-                                  return const Text('Loading...');
-                                } else if (snapshot.hasError) {
-                                  return const Text('User');
-                                }
-
-                                profileImage.value = snapshot.data?['proImage'] ?? '';
-
-                                final username = snapshot.data?['username'] != null && snapshot.data!['username'] != "" ? snapshot.data!['username']  : snapshot.data!['email'].toString().split("@")[0] ;
-                                return document.senderId == currentUserUid ? const SizedBox() : Text(
-                                  (document.senderId == currentUserUid)
-                                      ? 'You'
-                                      : username ?? 'Unknown User',
-                                  style: TextStyle(
-                                    color: (document.senderId == currentUserUid)
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ) ;
-                              },
-                            ),
-                            if (document.isGif)
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) {
-                                      return ImageScreen(imageUrl: document.gifUrl);
-                                    },
-                                  ));
-                                },
-                                child: Image.network(
-                                  document.gifUrl,
-                                  width: 150,
-                                ),
-                              ),
-                            const SizedBox(height: 5,),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: SizedBox(
-                                // color: Colors.yellow,
-                                width: MediaQuery.of(context).size.width /1.8,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SelectableText(
-                                      sentence.trim(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                          color: (document.senderId == currentUserUid)
-                                              ? Colors.white
-                                              : Colors.black,overflow: TextOverflow.ellipsis),
-                                    ),
-                                    const SizedBox(height: 10,),
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Row(
-                                        children: [
-                                          GestureDetector(
-                                              onTap: () async {
-                                                List<String> ids = [controller.firebaseAuth!.currentUser!.uid, controller.receiverUserID.value];
-                                                ids.sort();
-                                                String chatRoomId = ids.join("_");
-                                                document.like == "1" ?
-                                                await FirebaseFirestore.instance
-                                                    .collection('chat_rooms')
-                                                    .doc(chatRoomId)
-                                                    .collection('messages').doc(id)
-                                                    .update({"like" : "0"}) :
-
-                                                await FirebaseFirestore.instance
-                                                    .collection('chat_rooms')
-                                                    .doc(chatRoomId)
-                                                    .collection('messages').doc(id)
-                                                    .update({"like" : "1"});
-                                              },
-                                              child: document.like == "1" ? const Icon(Icons.favorite,color: Colors.red,) : const Icon(Icons.favorite_border_rounded,))
-                                          /*PopupMenuButton(
-                                            shadowColor: Colors.transparent,
-                                            padding: EdgeInsets.zero,
-                                            color: Colors.transparent,
-                                            child: const Center(child: Icon(Icons.favorite_border_rounded,)),
-                                            itemBuilder: (context) {
-                                              return List.generate(1, (index) {
-                                                List<String> ids = [controller.firebaseAuth!.currentUser!.uid, controller.receiverUserID.value];
-                                                ids.sort();
-                                                String chatRoomId = ids.join("_");
-                                                return PopupMenuItem(
-                                                  height: 20,
-                                                  // padding: EdgeInsets.only(top: 10, right: 15),
-                                                  value: index,
-                                                  child: Container(
-
-                                                    decoration: const BoxDecoration(
-                                                        borderRadius: BorderRadius.only(
-                                                            bottomLeft: Radius.circular(12),
-                                                            topRight: Radius.circular(12),
-                                                            bottomRight: Radius.circular(12),
-                                                            topLeft: Radius.circular(12)),
-                                                        color: Colors.grey),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                          children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: GestureDetector(onTap: () async {
-                                                                await FirebaseFirestore.instance
-                                                                    .collection('chat_rooms')
-                                                                    .doc(chatRoomId)
-                                                                    .collection('messages').doc(id)
-                                                                    .update({"lick" : 1});
-                                                                Navigator.pop(context);
-                                                              },child: Image.asset("images/imoj.png",width: 35,)),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: GestureDetector(onTap: () async {
-
-                                                                await FirebaseFirestore.instance
-                                                                    .collection('chat_rooms')
-                                                                    .doc(chatRoomId)
-                                                                    .collection('messages').doc(id)
-                                                                    .update({"lick" : 2});
-                                                                Navigator.pop(context);
-
-                                                              },child: Image.asset("images/imojji2.png",width: 35,)),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: GestureDetector(onTap: () async {
-
-                                                                await FirebaseFirestore.instance
-                                                                    .collection('chat_rooms')
-                                                                    .doc(chatRoomId)
-                                                                    .collection('messages').doc(id)
-                                                                    .update({"lick" : 3});
-                                                                Navigator.pop(context);
-
-                                                              },child: Image.asset("images/imojji3.png",width: 35,)),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: GestureDetector(onTap: () async {
-
-                                                                await FirebaseFirestore.instance
-                                                                    .collection('chat_rooms')
-                                                                    .doc(chatRoomId)
-                                                                    .collection('messages').doc(id)
-                                                                    .update({"lick" : 4});
-                                                                Navigator.pop(context);
-
-                                                              },child: Image.asset("images/imojji4.png",width: 35,)),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: GestureDetector(onTap: () async {
-                                                                await FirebaseFirestore.instance
-                                                                    .collection('chat_rooms')
-                                                                    .doc(chatRoomId)
-                                                                    .collection('messages').doc(id)
-                                                                    .update({"lick" : 5});
-                                                                Navigator.pop(context);
-
-                                                              },child: Image.asset("images/imojji5.png",width: 35,)),
-                                                            ),
-                                                          ]),
-                                                    ),
-                                                  ),
-                                                );
-                                              });
-                                            },
-                                          )*/,
-                                          Text(
-                                            formattedTime,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontStyle: FontStyle.italic,
-                                              color: Colors.black45,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                          ],
-                        ),
                       ],
                     ),
                   ),
@@ -784,68 +533,52 @@ Widget build(BuildContext context) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      FutureBuilder(
-                        future: FirestoreDB().getUserData(document.senderId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting ||
-                              !snapshot.hasData) {
-                            return const SizedBox();
-                          } else if (snapshot.hasError) {
-                            return const Text('');
-                          }
+                      document.senderId == currentUserUid ? const SizedBox() :
+                      controller.userurl.value != "" ?  GestureDetector(
+                        onTap: () {
+                          controller.emailP.value = controller.email.value ?? '';
+                          controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
+                          controller.userImageP.value = controller.userurl.value ?? '';
 
-                          profileImage.value = snapshot.data?['proImage'] ?? '';
-
-                          final username = snapshot.data?['username'] != "" && snapshot.data!['username'] != "" ? snapshot.data!['username'] : snapshot.data!['username'].toString().split("@")[0] ;
-                          return document.senderId == currentUserUid ? const SizedBox() :
-                          snapshot.data!['proImage'] != null && snapshot.data!['proImage'] != "" ?  GestureDetector(
-                            onTap: () {
-                              controller.emailP.value = (snapshot.data!['email'] as String?) ?? '';
-                              controller.userNameP.value = snapshot.data!['username'] != null && snapshot.data!['username'] != "" ? snapshot.data!['username'] : snapshot.data!['email'].toString().split("@")[0] ;
-                              controller.userImageP.value = snapshot.data!['proImage'] ?? '';
-
-                              Get.toNamed(PageConst.userPrivateProfilePage);
-                            },
+                          Get.toNamed(PageConst.userPrivateProfilePage);
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
                             child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
-                              child: Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Container(
 
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(25),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: FirebaseImageProvider(
-                                          FirebaseUrl(snapshot.data?['proImage'])),
-                                    ),
-                                  ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(25),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: FirebaseImageProvider(
+                                      FirebaseUrl(controller.userurl.value)),
                                 ),
                               ),
                             ),
-                          ) : GestureDetector(
-                            onTap: () {
-                              controller.emailP.value = (snapshot.data!['email'] as String?) ?? '';
-                              controller.userNameP.value = snapshot.data!['username'] != null && snapshot.data!['username'] != "" ? snapshot.data!['username'] : snapshot.data!['email'].toString().split("@")[0] ;
-                              controller.userImageP.value = snapshot.data!['proImage'] ?? '';
+                          ),
+                        ),
+                      ) : GestureDetector(
+                        onTap: () {
+                          controller.emailP.value = controller.email.value ?? '';
+                          controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
+                          controller.userImageP.value = controller.userurl.value ?? '';
 
-                              Get.toNamed(PageConst.userPrivateProfilePage);
-                            },
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
-                              child: const Padding(
-                                padding: EdgeInsets.all(2.0),
-                                child: Icon(Icons.person_outline),
-                              ),
-                            ),
-                          ) ;
+                          Get.toNamed(PageConst.userPrivateProfilePage);
                         },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
+                          child: const Padding(
+                            padding: EdgeInsets.all(2.0),
+                            child: Icon(Icons.person_outline),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 10,),
                       Column(
@@ -853,32 +586,16 @@ Widget build(BuildContext context) {
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                         children: [
-                          FutureBuilder(
-                            future: FirestoreDB().getUserData(document.senderId),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting ||
-                                  !snapshot.hasData) {
-                                return const Text('Loading...');
-                              } else if (snapshot.hasError) {
-                                return const Text('User');
-                              }
-
-                              profileImage.value = snapshot.data?['proImage'] ?? '';
-
-                              final username = snapshot.data?['username'] != null && snapshot.data!['username'] != "" ? snapshot.data!['username'] : snapshot.data!['email'].toString().split("@")[0];
-                              return document.senderId == currentUserUid ? const SizedBox() : Text(
-                                (document.senderId == currentUserUid)
-                                    ? 'You'
-                                    : username ?? 'Unknown User',
-                                style: TextStyle(
-                                  color: (document.senderId == currentUserUid)
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ) ;
-                            },
+                          document.senderId == currentUserUid ? const SizedBox() : Text(
+                            (document.senderId == currentUserUid)
+                                ? 'You'
+                                : controller.username.value ?? 'Unknown User',
+                            style: TextStyle(
+                              color: (document.senderId == currentUserUid)
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           if (document.isGif)
                             GestureDetector(
@@ -1347,10 +1064,10 @@ void _handleSubmitted(String text) async {
   await attemptSendMessage(controller.receiverUserID.value);
 
   // Update read message
-  await controller.updateReadMessage(
-    doc: controller.receiverUserID.value,
-    isRead: false,
-  );
+  // await controller.updateReadMessage(
+  //   doc: controller.receiverUserID.value,
+  //   isRead: false,
+  // );
 
   openChat();
 
@@ -1371,6 +1088,12 @@ void _handleSubmitted(String text) async {
         'senderId': controller.receiverUserID.value,
       },
     );
+
+/*    await sendNotificationMessageToPeerUser(
+      peerUserToken: token,
+      myName: 'Messageee from $senderUsername',
+      textFromTextField: text.isNotEmpty ? text : controller.selectedGifUrl.value,
+    );*/
     controller.isSendMessage.value = false;
 
     closeChat();
@@ -1388,7 +1111,6 @@ void _handleSubmitted(String text) async {
         .doc(uid)
         .snapshots();
   }
-
   Future<void> sendNotification(
       String token,
       String body,
@@ -1419,6 +1141,55 @@ void _handleSubmitted(String text) async {
       print("Error sending notification: $e");
     }
   }
+
+/*  Future<void> sendNotificationMessageToPeerUser(
+      {textFromTextField, myName,  peerUserToken}) async {
+    await Dio().post(
+      'https://fcm.googleapis.com/v1/projects/tappedin-95539/messages:send?access_token=ya29.a0AfB_byCTGikcHcwsFfgYAr7TxWats3lQ5B2zLysugUpAQtPUAX0kgSPPaC85l8LadHV7rKvGKhScaQmp0EnJh87O0fFtvYhlOi5ncnYB1y1gr34IyaoKQoy5iqb1ay9SLrLPZyUstGAH_AOYAgG4W4fbA2lnYqIOcncaCgYKAbkSARMSFQHGX2MiRIjN-FnQSEieDrMcBpQ4Gw0170',
+      options: Options(
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      ),
+      data: jsonEncode(
+        <String, dynamic>{
+          "message": {
+            "token": peerUserToken,
+            "notification": {"title": myName, "body": textFromTextField},
+            "data": {
+              "click_action": "FLUTTER_NOTIFICATION_CLICK",
+              "screen": "chat",
+              "user_id": controller.firebaseAuth!.currentUser!.uid,
+              "name": myName,
+              "profile": controller.firebaseAuth!.currentUser!.uid,
+              'receiverUserEmail': controller.receiverUserEmail.value,
+              'receiverUserID': controller.firebaseAuth!.currentUser!.uid,
+              'senderId': controller.receiverUserID.value,
+            },
+            "android": {
+              "notification": {
+                "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                "body": textFromTextField
+              }
+            },
+            "apns": {
+              "payload": {
+                "priority": "high",
+                "aps": {
+                  "badge": 0,
+                  "category": "NEW_MESSAGE_CATEGORY",
+                  "sound": "default"
+                }
+              }
+            }
+          }
+        },
+      ),
+    );
+  }*/
+
+
+
 
   Future<String> getUserToken(String uid) async {
     CollectionReference userData = _firestoreInstance.collection('users');

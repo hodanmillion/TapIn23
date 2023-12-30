@@ -67,6 +67,7 @@ class ContactsController extends GetxController {
         });
         acceptedContacts.bindStream(message);
 
+
         print("===currentUserUid==" + currentUserUid);
 
         print("===contacts==" + acceptedContacts.length.toString());

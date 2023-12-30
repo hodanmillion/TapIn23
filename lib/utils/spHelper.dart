@@ -2,12 +2,10 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../services/notification/Notificationdata.dart';
 
 class AppSharedPrefs {
 
 
-  static NotificationData notificationData = NotificationData();
 
   static const String CART_LIST = "CART_LIST";
 

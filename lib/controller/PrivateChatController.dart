@@ -15,6 +15,9 @@ class PrivateChatController extends GetxController {
   FirebaseAuth? firebaseAuth = null;
   FirebaseFirestore? fireStore = null;
   RxList<Message> messages = RxList<Message>();
+  RxString username = "".obs;
+  RxString userurl = "".obs;
+  RxString email = "".obs;
   RxList<String> messagesId = RxList<String>();
   RxBool isSendMessage = false.obs;
   final messageController = TextEditingController().obs;
@@ -82,7 +85,15 @@ void clearSelectedImageUrl() {
   }
 }
 
-
+  Stream<DocumentSnapshot<Map<String, dynamic>>> userChatData(
+      String chatroomId,String id) {
+    return FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatroomId)
+        .collection('messages')
+        .doc(id)
+        .snapshots();
+  }
 
   //GET MSG
   getMessageRoomID(String userId, String otherUserId) {
@@ -131,6 +142,20 @@ void clearSelectedImageUrl() {
 
     messagesId.bindStream(messageId);
     messages.bindStream(message);
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(otherUserId)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        final test = documentSnapshot.data() as Map;
+        username.value  = test['username'] ?? "";
+        userurl.value  = test['proImage'] ?? "";
+        email.value  = test['email'] ?? "";
+       }
+
+    });
   }
 
   Future<void> getUserLocation(String userId) async {

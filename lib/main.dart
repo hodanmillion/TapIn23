@@ -18,7 +18,6 @@ import 'package:myapp/services/auth_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:myapp/services/notification/notification.dart';
 import 'package:myapp/services/notification/notification2.dart';
-import 'package:myapp/services/notification/notificationService.dart';
 import 'package:myapp/viewBindings/ChatViewBinding.dart';
 import 'package:myapp/viewBindings/PastChatViewBinding.dart';
 import 'package:myapp/viewBindings/PublicChatViewBinding.dart';
@@ -37,11 +36,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
-  LocalNotification().configLocalNotification();
-  LocalNotification().getNotification();
-/*
+  // LocalNotification().configLocalNotification();
+  // LocalNotification().getNotification();
   await FireBaseNoti().initNotifications();
-*/
 /*  AppNotification().getNotification();
   AppNotification().configLocalNotification();*/
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -81,7 +78,7 @@ class _MyAppState extends State<MyApp> {
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         home: AuthG(),
-        initialRoute: PageConst.authG,
+        // initialRoute: PageConst.authG,
         // onGenerateRoute: (settings) => OnGenerateRoute.route(settings),
         getPages: [
           GetPage(

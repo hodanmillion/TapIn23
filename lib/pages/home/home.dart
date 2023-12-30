@@ -262,6 +262,7 @@ class _HomePageNewState extends State<HomePageNew> {
   @override
   void initState() {
     super.initState();
+
     fetchFriendRequests();
     getUserDataInfo();
     contactController.fetchAcceptedContacts();
