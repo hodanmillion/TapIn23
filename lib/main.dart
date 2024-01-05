@@ -32,13 +32,11 @@ Future<void> _firebaseMessagingBackgroundHandler(message) async {
   await Firebase.initializeApp();
   log("Handling a background message $message");
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
-  // LocalNotification().configLocalNotification();
-  // LocalNotification().getNotification();
-  await FireBaseNoti().initNotifications();
 /*  AppNotification().getNotification();
   AppNotification().configLocalNotification();*/
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -77,9 +75,11 @@ class _MyAppState extends State<MyApp> {
       },
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
+
         home: AuthG(),
         // initialRoute: PageConst.authG,
         // onGenerateRoute: (settings) => OnGenerateRoute.route(settings),
+        defaultTransition: Transition.cupertino,
         getPages: [
           GetPage(
             name: PageConst.authG,

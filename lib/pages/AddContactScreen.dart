@@ -57,13 +57,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
       return;
     }
 
-/*    bool isAlreadyAContact = await isUserAlreadyAContact(_searchedUserId!);
-    if (isAlreadyAContact) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You are already friends with this user!')),
-      );
-      return;
-    }*/
+
 
     // Check for existing friend requests
     final existingRequestsQuerySender = await _firestore

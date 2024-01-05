@@ -6,8 +6,6 @@ import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/pages/auto_generated_chat_page.dart';
-import 'package:myapp/routes/app_route.dart';
-import 'package:myapp/services/firestore/firestore.dart';
 import 'package:myapp/utils/colors.dart';
 
 import '../pages/publicChatProfile.dart';
@@ -146,7 +144,7 @@ class _MessageTileState extends State<MessageTile> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(username.value,
+                  Text(username.value.isEmpty ? widget.sender.split("@").first : username.value,
                     /*userData != null ? userData["username"] ?? 'User' : "User",*/
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -197,144 +195,7 @@ class _MessageTileState extends State<MessageTile> {
         ],
       );
               }
-            ),/*FutureBuilder(
-              future: FirestoreDB().getUserDataByEmail(widget.sender),
-              builder: (context, snapshot) {
-                // Handle different states
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text('');
-                } else if (snapshot.hasError) {
-                  return const Text('');
-                }
-
-                // Use the null-aware operator to access data safely
-                final userData = snapshot.data?.data();
-
-
-                // Display the username
-                return widget.sentByMe ? const SizedBox() :  Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    userData != null ? userData['proImage'] != null ? GestureDetector(
-                      onTap: () {
-                        emailP.value = (userData['email'] as String?) ?? '';
-                        userNameP.value = userData['username'] ?? '';
-                        userImageP.value = userData['proImage'] ?? '';
-                        userId.value  = userData['uid'] ?? '';
-                        Get.to(PublicChatProfilePage(email: emailP.value,name: userNameP.value,image: userImageP.value,userId: userId.value,onFriendRequestSent: onFriendRequestSent));
-                      },
-
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.imageBorder,
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        width: 35,
-                        height: 35,
-                        child: Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: Container(
-
-                  decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(25),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: FirebaseImageProvider(
-                                FirebaseUrl(userData['proImage'])),
-                          ),
-                  ),
-                ),
-                        ),
-                      ),
-                    ) : Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(color: AppColors.imageBorder,borderRadius: BorderRadius.circular(25)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.0),
-                        child: Container(
-
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Icon(Icons.person),
-                        ),
-                      ),
-                    ) : Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(color: AppColors.imageBorder,borderRadius: BorderRadius.circular(25)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.0),
-                        child: Container(
-
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Icon(Icons.person),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10,),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(username.value,
-                          *//*userData != null ? userData["username"] ?? 'User' : "User",*//*
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(userData["color"]),
-                          ),
-                        ),
-
-                        if (widget.isGif != null && widget.isGif!) // Check if gifUrl is not null
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) {
-                                  return ImageScreen(imageUrl: widget.gifUrl!);
-                                },
-                              ));
-                            },
-                            child: SizedBox(
-                              width: 150, // Adjust the width as needed
-                              child: Image.network(
-                                widget.gifUrl!,
-                                errorBuilder: (context, error, stackTrace) {
-                                  print('Error loading GIF: $error');
-                                  return const Text('');
-                                },
-                                width: 150, // Adjust the width as needed
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 5,),
-                        Text(
-                          widget.message,
-                          style: const TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w400
-                          ),
-                        ),
-                        const SizedBox(height: 10,),
-                        widget.sentByMe ? const SizedBox() :  Text(
-                          widget.time!,
-                          style:  const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black45,
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),*/
+            ),
             if(widget.sentByMe)
             if (widget.isGif != null && widget.isGif!) // Check if gifUrl is not null
               GestureDetector(
@@ -385,9 +246,6 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   void onFriendRequestSent() {
-    // Implement the logic to handle the friend request sent.
-    // You can update the UI or perform any necessary actions here.
-    // For example, you can refresh the friend requests tab.
     fetchFriendRequests();
   }
 

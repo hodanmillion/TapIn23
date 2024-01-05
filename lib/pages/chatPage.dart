@@ -165,7 +165,7 @@ Widget build(BuildContext context) {
                 return InkWell(
                   onTap: () {
                     controller.emailP.value = (userData['email'] as String?) ?? '';
-                    controller.userNameP.value = userData['username'] ?? '';
+                    controller.userNameP.value = userData['username'] ?? userData['email'].toString().split('@').first ?? "";
                     controller.userImageP.value = userData['proImage'] ?? '';
 
                     Get.toNamed(PageConst.userPrivateProfilePage);
@@ -323,7 +323,7 @@ Widget build(BuildContext context) {
   Widget _buildMessageList() {
     return Obx(() {
 
-      final reversedMessagesId = controller.messagesId.reversed.toList();
+      // final reversedMessagesId = controller.messagesId.reversed.toList();
       final reversedMessages = controller.messages.reversed.toList();
       return ListView.builder(
         reverse: true,
@@ -332,7 +332,7 @@ Widget build(BuildContext context) {
         itemCount: reversedMessages.length,
         itemBuilder: (context, index) {
 
-          return _buildMessageItem(reversedMessages[index],reversedMessagesId[index].isEmpty ? "" : reversedMessagesId[index] ,context);
+          return _buildMessageItem(reversedMessages[index],reversedMessages[index].id!.isEmpty ? "" : reversedMessages[index].id!,context);
         },
       );
     });
@@ -529,245 +529,144 @@ Widget build(BuildContext context) {
                       ),
 
                     ],
-                  ) : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      document.senderId == currentUserUid ? const SizedBox() :
-                      controller.userurl.value != "" ?  GestureDetector(
-                        onTap: () {
-                          controller.emailP.value = controller.email.value ?? '';
-                          controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
-                          controller.userImageP.value = controller.userurl.value ?? '';
+                  ) : Obx(() {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          document.senderId == currentUserUid ? const SizedBox() :
+                          controller.userurl.value != "" ?  GestureDetector(
+                            onTap: () {
+                              controller.emailP.value = controller.email.value ?? '';
+                              controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
+                              controller.userImageP.value = controller.userurl.value ?? '';
 
-                          Get.toNamed(PageConst.userPrivateProfilePage);
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
+                              Get.toNamed(PageConst.userPrivateProfilePage);
+                            },
                             child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Container(
 
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(25),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: FirebaseImageProvider(
-                                      FirebaseUrl(controller.userurl.value)),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(25),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: FirebaseImageProvider(
+                                          FirebaseUrl(controller.userurl.value)),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ) : GestureDetector(
-                        onTap: () {
-                          controller.emailP.value = controller.email.value ?? '';
-                          controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
-                          controller.userImageP.value = controller.userurl.value ?? '';
+                          ) : GestureDetector(
+                            onTap: () {
+                              controller.emailP.value = controller.email.value ?? '';
+                              controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
+                              controller.userImageP.value = controller.userurl.value ?? '';
 
-                          Get.toNamed(PageConst.userPrivateProfilePage);
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
-                          child: const Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Icon(Icons.person_outline),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10,),
-                      Column(
-                        crossAxisAlignment: (document.senderId == currentUserUid)
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          document.senderId == currentUserUid ? const SizedBox() : Text(
-                            (document.senderId == currentUserUid)
-                                ? 'You'
-                                : controller.username.value ?? 'Unknown User',
-                            style: TextStyle(
-                              color: (document.senderId == currentUserUid)
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontWeight: FontWeight.bold,
+                              Get.toNamed(PageConst.userPrivateProfilePage);
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(Icons.person_outline),
+                              ),
                             ),
                           ),
-                          if (document.isGif)
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) {
-                                    return ImageScreen(imageUrl: document.gifUrl);
+                          const SizedBox(width: 10,),
+                          Column(
+                            crossAxisAlignment: (document.senderId == currentUserUid)
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              document.senderId == currentUserUid ? const SizedBox() : Text(
+                                (document.senderId == currentUserUid)
+                                    ? 'You'
+                                    : controller.username.value,
+                                style: TextStyle(
+                                  color: (document.senderId == currentUserUid)
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (document.isGif)
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) {
+                                        return ImageScreen(imageUrl: document.gifUrl);
+                                      },
+                                    ));
                                   },
-                                ));
-                              },
-                              child: Image.network(
-                                document.gifUrl,
-                                width: 150,
-                              ),
-                            ),
-                          const SizedBox(height: 5,),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: SizedBox(
-                              // color: Colors.yellow,
-                              width: MediaQuery.of(context).size.width /1.8,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SelectableText(
-                                    sentence.trim(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: (document.senderId == currentUserUid)
-                                            ? Colors.white
-                                            : Colors.black,overflow: TextOverflow.ellipsis),
+                                  child: Image.network(
+                                    document.gifUrl,
+                                    width: 150,
                                   ),
-                                  const SizedBox(height: 10,),
-                                  Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Row(
-                                      children: [
-                                        GestureDetector(
-                                            onTap: () async {
-                                              List<String> ids = [controller.firebaseAuth!.currentUser!.uid, controller.receiverUserID.value];
-                                              ids.sort();
-                                              String chatRoomId = ids.join("_");
-                                              document.like == "1" ?
-                                              await FirebaseFirestore.instance
-                                                  .collection('chat_rooms')
-                                                  .doc(chatRoomId)
-                                                  .collection('messages').doc(id)
-                                                  .update({"like" : "0"}) :
-
-                                              await FirebaseFirestore.instance
-                                                  .collection('chat_rooms')
-                                                  .doc(chatRoomId)
-                                                  .collection('messages').doc(id)
-                                                  .update({"like" : "1"});
-                                            },
-                                            child: document.like == "1" ? const Icon(Icons.favorite,color: Colors.red,) : const Icon(Icons.favorite_border_rounded,))
-                                        /*PopupMenuButton(
-                                          shadowColor: Colors.transparent,
-                                          padding: EdgeInsets.zero,
-                                          color: Colors.transparent,
-                                          child: const Center(child: Icon(Icons.favorite_border_rounded,)),
-                                          itemBuilder: (context) {
-                                            return List.generate(1, (index) {
-                                              List<String> ids = [controller.firebaseAuth!.currentUser!.uid, controller.receiverUserID.value];
-                                              ids.sort();
-                                              String chatRoomId = ids.join("_");
-                                              return PopupMenuItem(
-                                                height: 20,
-                                                // padding: EdgeInsets.only(top: 10, right: 15),
-                                                value: index,
-                                                child: Container(
-
-                                                  decoration: const BoxDecoration(
-                                                      borderRadius: BorderRadius.only(
-                                                          bottomLeft: Radius.circular(12),
-                                                          topRight: Radius.circular(12),
-                                                          bottomRight: Radius.circular(12),
-                                                          topLeft: Radius.circular(12)),
-                                                      color: Colors.grey),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Padding(
-                                                            padding: const EdgeInsets.all(2.0),
-                                                            child: GestureDetector(onTap: () async {
-                                                              await FirebaseFirestore.instance
-                                                                  .collection('chat_rooms')
-                                                                  .doc(chatRoomId)
-                                                                  .collection('messages').doc(id)
-                                                                  .update({"lick" : 1});
-                                                              Navigator.pop(context);
-                                                            },child: Image.asset("images/imoj.png",width: 35,)),
-                                                          ),
-                                                          Padding(
-                                                            padding: const EdgeInsets.all(2.0),
-                                                            child: GestureDetector(onTap: () async {
-
-                                                              await FirebaseFirestore.instance
-                                                                  .collection('chat_rooms')
-                                                                  .doc(chatRoomId)
-                                                                  .collection('messages').doc(id)
-                                                                  .update({"lick" : 2});
-                                                              Navigator.pop(context);
-
-                                                            },child: Image.asset("images/imojji2.png",width: 35,)),
-                                                          ),
-                                                          Padding(
-                                                            padding: const EdgeInsets.all(2.0),
-                                                            child: GestureDetector(onTap: () async {
-
-                                                              await FirebaseFirestore.instance
-                                                                  .collection('chat_rooms')
-                                                                  .doc(chatRoomId)
-                                                                  .collection('messages').doc(id)
-                                                                  .update({"lick" : 3});
-                                                              Navigator.pop(context);
-
-                                                            },child: Image.asset("images/imojji3.png",width: 35,)),
-                                                          ),
-                                                          Padding(
-                                                            padding: const EdgeInsets.all(2.0),
-                                                            child: GestureDetector(onTap: () async {
-
-                                                              await FirebaseFirestore.instance
-                                                                  .collection('chat_rooms')
-                                                                  .doc(chatRoomId)
-                                                                  .collection('messages').doc(id)
-                                                                  .update({"lick" : 4});
-                                                              Navigator.pop(context);
-
-                                                            },child: Image.asset("images/imojji4.png",width: 35,)),
-                                                          ),
-                                                          Padding(
-                                                            padding: const EdgeInsets.all(2.0),
-                                                            child: GestureDetector(onTap: () async {
-                                                              await FirebaseFirestore.instance
-                                                                  .collection('chat_rooms')
-                                                                  .doc(chatRoomId)
-                                                                  .collection('messages').doc(id)
-                                                                  .update({"lick" : 5});
-                                                              Navigator.pop(context);
-
-                                                            },child: Image.asset("images/imojji5.png",width: 35,)),
-                                                          ),
-                                                        ]),
-                                                  ),
-                                                ),
-                                              );
-                                            });
-                                          },
-                                        )*/,
-                                        Text(
-                                          formattedTime,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.black45,
-                                          ),
+                                ),
+                              const SizedBox(height: 5,),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: SizedBox(
+                                  // color: Colors.yellow,
+                                  width: MediaQuery.of(context).size.width /1.8,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SelectableText(
+                                        sentence.trim(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: (document.senderId == currentUserUid)
+                                                ? Colors.white
+                                                : Colors.black,overflow: TextOverflow.ellipsis),
+                                      ),
+                                      const SizedBox(height: 10,),
+                                      Align(
+                                        alignment: Alignment.bottomLeft,
+                                        child: Row(
+                                          children: [
+                                            GestureDetector(
+                                                onTap: () async {
+                                                  List<String> ids = [controller.firebaseAuth!.currentUser!.uid, controller.receiverUserID.value];
+                                                  ids.sort();
+                                                  String chatRoomId = ids.join("_");
+                                                  await FirebaseFirestore.instance
+                                                      .collection('chat_rooms')
+                                                      .doc(chatRoomId)
+                                                      .collection('messages').doc(id)
+                                                      .update({"like" : document.like == "1" ? "0":"1"});
+                                                },
+                                                child: document.like == "1" ? const Icon(Icons.favorite,color: Colors.red,) : const Icon(Icons.favorite_border_rounded,)),
+                                            Text(
+                                              formattedTime,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontStyle: FontStyle.italic,
+                                                color: Colors.black45,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
 
+                            ],
+                          ),
                         ],
-                      ),
-                    ],
+                      );
+                    }
                   ),
                 ),
                 if(document.senderId == currentUserUid)
@@ -1064,10 +963,10 @@ void _handleSubmitted(String text) async {
   await attemptSendMessage(controller.receiverUserID.value);
 
   // Update read message
-  // await controller.updateReadMessage(
-  //   doc: controller.receiverUserID.value,
-  //   isRead: false,
-  // );
+  await controller.updateReadMessage(
+    doc: controller.receiverUserID.value,
+    isRead: false,
+  );
 
   openChat();
 
@@ -1077,7 +976,7 @@ void _handleSubmitted(String text) async {
     String senderId = controller.firebaseAuth!.currentUser!.uid;
     String senderUsername = await fetchSenderUsername(senderId);
 
-    await sendNotification(
+/*    await sendNotification(
 
       token,
       text.isNotEmpty ? text : controller.selectedGifUrl.value,
@@ -1087,13 +986,13 @@ void _handleSubmitted(String text) async {
         'receiverUserID': controller.firebaseAuth!.currentUser!.uid,
         'senderId': controller.receiverUserID.value,
       },
-    );
+    );*/
 
-/*    await sendNotificationMessageToPeerUser(
+    await sendNotificationMessageToPeerUser(
       peerUserToken: token,
       myName: 'Messageee from $senderUsername',
       textFromTextField: text.isNotEmpty ? text : controller.selectedGifUrl.value,
-    );*/
+    );
     controller.isSendMessage.value = false;
 
     closeChat();
@@ -1111,7 +1010,7 @@ void _handleSubmitted(String text) async {
         .doc(uid)
         .snapshots();
   }
-  Future<void> sendNotification(
+/*  Future<void> sendNotification(
       String token,
       String body,
       String title,
@@ -1140,12 +1039,12 @@ void _handleSubmitted(String text) async {
     } catch (e) {
       print("Error sending notification: $e");
     }
-  }
+  }*/
 
-/*  Future<void> sendNotificationMessageToPeerUser(
+  Future<void> sendNotificationMessageToPeerUser(
       {textFromTextField, myName,  peerUserToken}) async {
     await Dio().post(
-      'https://fcm.googleapis.com/v1/projects/tappedin-95539/messages:send?access_token=ya29.a0AfB_byCTGikcHcwsFfgYAr7TxWats3lQ5B2zLysugUpAQtPUAX0kgSPPaC85l8LadHV7rKvGKhScaQmp0EnJh87O0fFtvYhlOi5ncnYB1y1gr34IyaoKQoy5iqb1ay9SLrLPZyUstGAH_AOYAgG4W4fbA2lnYqIOcncaCgYKAbkSARMSFQHGX2MiRIjN-FnQSEieDrMcBpQ4Gw0170',
+      'https://fcm.googleapis.com/v1/projects/tappedin-95539/messages:send?access_token=${controller.accessToken.value}',
       options: Options(
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -1186,7 +1085,7 @@ void _handleSubmitted(String text) async {
         },
       ),
     );
-  }*/
+  }
 
 
 

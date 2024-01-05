@@ -3,22 +3,25 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/utils/spHelper.dart';
 
 import '../model/message_chat.dart';
 
 class PrivateChatController extends GetxController {
+  RxString accessToken = ''.obs;
   FirebaseAuth? firebaseAuth = null;
   FirebaseFirestore? fireStore = null;
   RxList<Message> messages = RxList<Message>();
   RxString username = "".obs;
   RxString userurl = "".obs;
   RxString email = "".obs;
-  RxList<String> messagesId = RxList<String>();
+  // RxList<String> messagesId = RxList<String>();
   RxBool isSendMessage = false.obs;
   final messageController = TextEditingController().obs;
   final searchGifText = TextEditingController().obs;
@@ -130,17 +133,17 @@ void clearSelectedImageUrl() {
 
     var message = query.snapshots().map((querySnap) {
       return querySnap.docs
-          .map((docSnap) => Message.fromJson(docSnap))
+          .map((docSnap) => Message.fromJson(docSnap,docSnap.id))
           .toList();
     });
 
-    var messageId = query.snapshots().map((querySnap) {
-      return querySnap.docs
-          .map((docSnap) => docSnap.id.toString())
-          .toList();
-    });
+    // var messageId = query.snapshots().map((querySnap) {
+    //   return querySnap.docs
+    //       .map((docSnap) => docSnap.id.toString())
+    //       .toList();
+    // });
 
-    messagesId.bindStream(messageId);
+    // messagesId.bindStream(messageId);
     messages.bindStream(message);
 
     FirebaseFirestore.instance
@@ -266,14 +269,65 @@ void clearSelectedImageUrl() {
       {required String doc, required bool isRead}) async {
     try {
       final user = firebaseAuth!.currentUser;
+      final Timestamp timestamp = Timestamp.now();
+
       if (user != null) {
         final currentUserUid = user.uid;
         // Query for unread messages in the 'contacts' collection
-        final unreadMessagesQuery = FirebaseFirestore.instance
+        FirebaseFirestore.instance
             .collection('accepted_c')
             .doc(doc)
             .collection('contacts')
             .doc(currentUserUid)
+            .update({"time":timestamp});
+        FirebaseFirestore.instance
+            .collection('accepted_c')
+            .doc(currentUserUid)
+            .collection('contacts')
+            .doc(doc)
+            .update({"time":timestamp});
+      }
+    } catch (error) {
+      // Handle any other errors that might occur during data retrieval
+      print("Failed to fetch accepted contacts: $error");
+    }
+  }
+
+  Future<Map<String, dynamic>> loadJsonData() async {
+    try {
+      final String jsonString =
+      await rootBundle.loadString('images/service-acc-file.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+      return jsonData;
+    } catch (e) {
+      print('Error loading JSON: $e');
+      return {};
+    }
+  }
+
+  Future getAccessToken() async {
+    final Map<String, dynamic> jsonData = await loadJsonData();
+    const Scopes = ["https://www.googleapis.com/auth/firebase.messaging"];
+    final client = await clientViaServiceAccount(
+        ServiceAccountCredentials.fromJson(jsonData), Scopes);
+    accessToken.value = client.credentials.accessToken.data;
+  }
+
+
+  Future<bool?> updateReadMessageFromList(
+      {required String doc, required bool isRead}) async {
+    try {
+      final user = firebaseAuth!.currentUser;
+      if (user != null) {
+        final currentUserUid = user.uid;
+
+        print("currentUserUid $currentUserUid $doc");
+        // Query for unread messages in the 'contacts' collection
+        final unreadMessagesQuery = FirebaseFirestore.instance
+            .collection('accepted_c')
+            .doc(currentUserUid)
+            .collection('contacts')
+            .doc(doc)
             .update({"isRead": isRead});
       }
     } catch (error) {
@@ -287,13 +341,17 @@ void clearSelectedImageUrl() {
     super.onInit();
     firebaseAuth = FirebaseAuth.instance;
     fireStore = FirebaseFirestore.instance;
-    AppSharedPrefs.spClean();
+    // AppSharedPrefs.spClean();
     receiverUserID.value = Get.parameters["receiverUserID"] != null ? Get.parameters["receiverUserID"]! : "" ;
     receiverUserEmail.value = Get.parameters["receiverUserEmail"] != null ? Get.parameters["receiverUserEmail"]! : "" ;
     senderId.value = Get.parameters["senderId"] != null ? Get.parameters["senderId"]! : "" ;
-
-    getUserLocation(receiverUserID.value);
+    getAccessToken();
     getMessages(firebaseAuth!.currentUser!.uid, receiverUserID.value);
+    // getUserLocation(receiverUserID.value);
+    updateReadMessageFromList(
+      doc: receiverUserID.value,
+      isRead: true,
+    );
 
     fetchGifs();
   }

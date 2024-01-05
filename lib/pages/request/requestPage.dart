@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../home_page_requests.dart';
@@ -15,9 +16,9 @@ class RequestPage extends StatefulWidget {
 
 class _RequestPageState extends State<RequestPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool isLoading = false;
-  List<DocumentSnapshot> friendRequests = [];
-  List<DocumentSnapshot> acceptedContacts = [];
+  RxBool isLoading = false.obs;
+  RxList<DocumentSnapshot> friendRequests = RxList.empty(growable: true);
+  RxList<DocumentSnapshot> acceptedContacts = RxList.empty(growable: true);
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
@@ -105,7 +106,7 @@ class _RequestPageState extends State<RequestPage> {
                     Expanded(
                       child: HomePageRequests(
                         friendRequests: friendRequestsDocs,
-                        isLoading: isLoading,
+                        isLoading: isLoading.value,
                         onRequestAccepted: (request) {
                           handleRequestAccepted(request);
                         },
@@ -203,9 +204,7 @@ class _RequestPageState extends State<RequestPage> {
             .delete();
 
         // Remove the accepted friend request from the friendRequests list
-        setState(() {
           friendRequests.remove(request);
-        });
 
         // Call fetchAcceptedContacts to update the acceptedContacts list
         await fetchAcceptedContacts();
@@ -217,9 +216,7 @@ class _RequestPageState extends State<RequestPage> {
 
   Future<void> fetchAcceptedContacts() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+        isLoading.value = true;
       final user = _auth.currentUser;
       if (user != null) {
         final currentUserUid = user.uid;
@@ -229,24 +226,18 @@ class _RequestPageState extends State<RequestPage> {
             .collection('contacts') // Change this line
             .get();
 
-        setState(() {
-          acceptedContacts = contactsQuery.docs;
-          isLoading = false;
-        });
+          acceptedContacts.value = contactsQuery.docs;
+          isLoading.value = false;
       }
     } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
+        isLoading.value = false;
       print("Failed to fetch accepted contacts: $error");
     }
   }
 
   Future<void> fetchFriendRequests() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+        isLoading.value = true;
       final user = _auth.currentUser;
       if (user != null) {
         final currentUserUid = user.uid;
@@ -255,15 +246,11 @@ class _RequestPageState extends State<RequestPage> {
             .where('receiverId', isEqualTo: currentUserUid)
             .get();
 
-        setState(() {
-          friendRequests = friendRequestsQuery.docs;
-          isLoading = false;
-        });
+          friendRequests.value = friendRequestsQuery.docs;
+          isLoading.value = false;
       }
     } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
+        isLoading.value = false;
       print("Failed to fetch friend requests: $error");
     }
   }

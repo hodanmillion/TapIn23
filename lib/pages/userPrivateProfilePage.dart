@@ -19,6 +19,12 @@ class _UserPrivateProfilePageState extends State<UserPrivateProfilePage> {
   final prController = Get.find<PrivateChatController>();
 
   @override
+  void initState() {
+    prController.getUserLocation(prController.receiverUserID.value);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Access the parameters
     // final String email = params['email'] ?? '';

@@ -40,7 +40,13 @@ class LocalNotification {
       int? id, String? title, String? body, String? payload) async {}
   Future _selectNotification(NotificationResponse? notificationResponse) async {
     var data = jsonDecode(notificationResponse!.payload!);
-    onNotificationClick(data);
+    Map<String, String> param = {
+      "receiverUserEmail":   data['receiverUserEmail'],
+      "receiverUserID":  data['receiverUserID'],
+      "senderId":  data['senderId'],
+    };
+    Get.toNamed(PageConst.chatView, parameters: param);
+    // onNotificationClick(data);
   }
 
 /*local notification setup*/

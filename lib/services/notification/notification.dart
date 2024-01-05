@@ -79,17 +79,17 @@ class FireBaseNoti {
   //init foreground and background settings
   Future initPushNotifications() async {
     // handle when app is teminated
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
-
-    //attatch event listener for when notifications open
-    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
-
     FirebaseMessaging.onMessage.listen((message) {
       print('message');
       // showNotification(message);
       return;
     });
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    await FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+
+    //attatch event listener for when notifications open
+
   }
 
   // void showNotification(message) async {

@@ -9,6 +9,7 @@ class Message {
   final String gifUrl;
   final bool isGif;
   String? like;
+  String? id;
 
   Message(
       {required this.senderId,
@@ -18,7 +19,8 @@ class Message {
       required this.timestamp,
       required this.gifUrl,
       required this.isGif,
-      this.like  });
+      this.like,
+      this.id});
 
   //convert to map
 
@@ -31,16 +33,17 @@ class Message {
       'timestamp': timestamp,
       'gifUrl': gifUrl,
       'isGif': isGif,
-      'like': like ?? "0"
+      'like': like ?? "0",
+      'id': id
     };
   }
 
-  static Message fromJson(DocumentSnapshot json) {
+  static Message fromJson(DocumentSnapshot json, String id) {
     //  DateTime dt = (json.get('timestamp') as Timestamp).toDate();
 
     // var date = DateTime.fromMillisecondsSinceEpoch(json.get('datetime') * 1000);
     //   print("===giffff"+json.get('gifUrl'));
-    final like = json.data() as Map <String,dynamic>;
+    final like = json.data() as Map<String, dynamic>;
     return Message(
         senderId: json.get('senderId'),
         senderEmail: json.get('senderEmail'),
@@ -49,7 +52,52 @@ class Message {
         timestamp: json.get('timestamp'),
         gifUrl: json.get('gifUrl'),
         isGif: json.get('isGif'),
-        like: like["like"] == null ? '0' : json.get("like")
+        like: like["like"] == null ? '0' : json.get("like"),
+        id: id);
+  }
+}
+
+class Contact {
+  final String contactId;
+  final String email;
+  final String profileImg;
+  final String userId;
+  final Timestamp? timestamp;
+  final String username;
+  final bool isRead;
+
+  Contact({
+    required this.contactId,
+    required this.email,
+    required this.profileImg,
+    required this.userId,
+    required this.timestamp,
+    required this.username,
+    required this.isRead,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'contactId': contactId,
+      'email': email,
+      'proImage': profileImg,
+      'userId': userId,
+      'time': timestamp,
+      'username': username,
+      'isRead': isRead,
+    };
+  }
+
+  static Contact fromJson(DocumentSnapshot json) {
+    final like = json.data() as Map<String, dynamic>;
+    return Contact(
+      contactId: json.get('contactId'),
+      email: json.get('email'),
+      userId: json.get('userId'),
+      profileImg: json.get('proImage'),
+      timestamp: like["time"] == null ? null : json.get("time"),
+      username: json.get('username'),
+      isRead: json.get('isRead'),
     );
   }
 }

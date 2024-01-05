@@ -1,19 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_cached_image/firebase_cached_image.dart';
+import 'package:firebase_cached_image/firebase_cached_image.dart' as fip;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/controller/ContactController.dart';
+import 'package:myapp/model/message_chat.dart';
 import '../routes/app_route.dart';
 import '../utils/colors.dart';
 
-class ContactsPage extends GetView<ContactsController> {
-  final controller = Get.find<ContactsController>();
-  FirebaseAuth? _firebaseAuth = FirebaseAuth.instance;
+class ContactsPage extends StatefulWidget {
+  @override
+  State<ContactsPage> createState() => _ContactsPageState();
+}
 
+class _ContactsPageState extends State<ContactsPage> {
+  final controller = Get.put(ContactsController());
+
+  FirebaseAuth? _firebaseAuth = FirebaseAuth.instance;
+  // RxList<DocumentSnapshot> acceptedContacts = RxList<DocumentSnapshot>();
+  // RxList<DocumentSnapshot> timeExist = RxList<DocumentSnapshot>();
+  // RxList<DocumentSnapshot> timeNull = RxList<DocumentSnapshot>();
   Future<Map<String, dynamic>?> getUserData(String uid) async {
     try {
       final data2 = await FirebaseFirestore.instance
@@ -43,13 +52,26 @@ class ContactsPage extends GetView<ContactsController> {
     }
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> userDataStream(String uid) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> userDataStream() {
     return FirebaseFirestore.instance
         .collection('accepted_c')
-        .doc(_firebaseAuth!.currentUser!.uid)
-        .collection("contacts")
-        .doc(uid)
+        .doc('3RILs1g0pOdVAa2Xh88fceUTxh62')
+        .collection('contacts')
+        .doc('L3TaEXzry5h32OlGiXE9rma6LZG2')
         .snapshots();
+  }
+
+  Stream<List<DocumentSnapshot>> getFirestoreData() {
+    CollectionReference collectionReference = FirebaseFirestore.instance
+        .collection('accepted_c')
+        .doc(controller.firebaseAuth.currentUser!.uid)
+        .collection('contacts');
+
+    return collectionReference
+        .snapshots()
+        .map(
+          (QuerySnapshot querySnapshot) => querySnapshot.docs,
+    );
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> userChatData(String chatroomId) {
@@ -59,12 +81,89 @@ class ContactsPage extends GetView<ContactsController> {
         .snapshots();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => controller.acceptedContacts.isEmpty
+    return Obx(() {
+      return controller.contact.isEmpty
           ? Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(40),
+            topLeft: Radius.circular(40),
+          ),
+          border: Border.all(
+            width: 3,
+            color: Colors.white,
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            "No contact history is available!".toUpperCase(),
+            style: const TextStyle(fontSize: 14, color: Color(0xff24786D)),
+          ),
+        ),
+      )
+          : Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+
+
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text(
+                "My Contacts",
+                style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    letterSpacing: .5,
+                    // decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15,),
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                addAutomaticKeepAlives: true,
+                itemCount: controller.contact.length,
+                itemBuilder: (context, index) {
+                  return _buildContactItem(index, context);
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+    /*return StreamBuilder<List<DocumentSnapshot>>(
+      stream: getContacts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: SizedBox(),
+          );
+        }
+        else if (snapshot.hasError) {
+          return const Center(
+            child: SizedBox(),
+          );
+        }
+        else {
+          controller.test();
+          return controller.contact.isEmpty
+              ? Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
@@ -86,7 +185,7 @@ class ContactsPage extends GetView<ContactsController> {
               ),
             ),
           )
-          : Container(
+              : Container(
             decoration: const BoxDecoration(
               color: Colors.white,
 
@@ -114,7 +213,9 @@ class ContactsPage extends GetView<ContactsController> {
                 const SizedBox(height: 15,),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: controller.acceptedContacts.length,
+                    shrinkWrap: true,
+                    addAutomaticKeepAlives: true,
+                    itemCount: controller.contact.length,
                     itemBuilder: (context, index) {
                       return _buildContactItem(index, context);
                     },
@@ -122,39 +223,39 @@ class ContactsPage extends GetView<ContactsController> {
                 ),
               ],
             ),
-          ),
-    );
+          );
+        }
+      },
+    );*/
   }
 
   Widget _buildContactItem(int index, BuildContext context) {
-    final data =
-        controller.acceptedContacts[index].data() as Map<String, dynamic>?;
-    final userId = data?['userId'] as String?;
-    final contactId = data?['contactId'] as String?;
-    final isRead = data?['isRead'] as bool?;
-    final email  = data?['email'] as String;
-    final imageUrl = data?['proImage'] as String;
-    final username = data?['username'] as String;
-    List<String> ids = [controller.firebaseAuth.currentUser!.uid, data?["contactId"]];
+    // final data = acceptedContacts[index].data() as Map<String, dynamic>?;
+    // final userId = data?['userId'] as String?;
+    // final contactId = data?['contactId'] as String?;
+    // final isRead = data?['isRead'] as bool?;
+    // final email  = data?['email'] as String;
+    // final imageUrl = data?['proImage'] as String;
+    // final username = data?['username'] as String;
+    List<String> ids = [controller.firebaseAuth.currentUser!.uid, controller.contact[index].contactId];
     ids.sort();
     String chatRoomId = ids.join("_");
     print(chatRoomId);
-    if (userId == null || contactId == null) {
+    if (controller.contact[index].userId.isEmpty || controller.contact[index].contactId.isEmpty) {
       return Container();
     }
 
     return Dismissible(
       confirmDismiss: (direction) async {
         await Future.delayed(const Duration(milliseconds: 1),() {
-          _showInfoDialog(context,contactId);
+          _showInfoDialog(context,controller.contact[index].contactId);
           return true;
         },) ;
         return null;
 
       },
       key: UniqueKey(),
-      onDismissed: (direction) {
-      },
+      onDismissed: (direction) {},
       background: Container(
         color: Colors.red,
         alignment: Alignment.centerRight,
@@ -171,11 +272,14 @@ class ContactsPage extends GetView<ContactsController> {
             return const Center(
               child: SizedBox(),
             );
-          } else if (snapshot.hasError) {
+          }
+          else if (snapshot.hasError) {
             return const Center(
               child: Text(''),
             );
-          } else if (snapshot.data! != null) {
+          }
+          else if (snapshot.data != null) {
+
             // Check if snapshot.data is not null and is of the expected type
             Map<String, dynamic>? userChatMsgData;
             RxString lastMsgDate = "".obs;
@@ -209,15 +313,14 @@ class ContactsPage extends GetView<ContactsController> {
               ),
               child: InkWell(
                 onTap: () async {
-                  print("${contactId} sdsd");
+                 /* print("${contactId} sdsd");
                   await controller.updateReadMessageFromList(
                     doc: contactId,
                     isRead: true,
-                  );
-
+                  );*/
                   var param = {
-                    "receiverUserEmail": email,
-                    "receiverUserID": contactId,
+                    "receiverUserEmail": controller.contact[index].email,
+                    "receiverUserID": controller.contact[index].contactId,
                     "senderId": controller.firebaseAuth.currentUser!.uid,
 
                   };
@@ -235,15 +338,16 @@ class ContactsPage extends GetView<ContactsController> {
                       children: [
                         ///
                         // buildNotificationIndicator(isRead),
-                      Container(
-                      width: 20.0,
-                      height: 20.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: (isRead ?? false) ? Colors.white  : Colors.red,
-                      ),
-                      child: Container(),
-                    ),
+                        controller.contact[index].isRead ?? false ?
+                       const Spacer() : Container(
+                          width: 20.0,
+                          height: 20.0,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color:  Colors.red,
+                          ),
+                          child: Container(),
+                        ),
                         ///
                         const SizedBox(height: 8,),
                         Text(userChatMsgData == null ? "" : userChatMsgData["time"] != null ? lastMsgDate.value : "",style: const TextStyle(
@@ -319,7 +423,7 @@ class ContactsPage extends GetView<ContactsController> {
                         ),*/
 
 
-                  leading: imageUrl != ""
+                  leading: controller.contact[index].profileImg != ""
                       ?
                   // ClipOval(
                   //     child: CachedNetworkImage(
@@ -347,8 +451,13 @@ class ContactsPage extends GetView<ContactsController> {
                             borderRadius: BorderRadius.circular(25),
                             image: DecorationImage(
                               fit: BoxFit.cover,
-                              image: FirebaseImageProvider(
-                                  FirebaseUrl(imageUrl)),
+                              image: fip.FirebaseImageProvider(
+                                  fip.FirebaseUrl(controller.contact[index].profileImg),
+                                options: const fip.CacheOptions(
+                                  checkForMetadataChange: true,
+                                  source: fip.Source.cacheServer
+                                )
+                              ),
                             ),
                           ),
                         ),
@@ -380,7 +489,7 @@ class ContactsPage extends GetView<ContactsController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        username != "" ? username : username.toString().split("@")[0],
+                        controller.contact[index].username != "" ? controller.contact[index].username : controller.contact[index].email.toString().split("@")[0],
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -389,7 +498,7 @@ class ContactsPage extends GetView<ContactsController> {
                       ),
                       const SizedBox(height: 8,),
                       Text(
-                        userChatMsgData == null ? "" : userChatMsgData["lastMsg"] != null ? userChatMsgData["lastMsg"] : "",
+                        userChatMsgData == null ? "" : userChatMsgData["lastMsg"] ?? "",
                         style: const TextStyle(
                           overflow: TextOverflow.ellipsis,
                           fontSize: 14,
@@ -456,7 +565,8 @@ class ContactsPage extends GetView<ContactsController> {
                 ),
               ),
             );
-          } else {
+          }
+          else {
             // Handle the case when snapshot.data is null or of unexpected type
             return const SizedBox();
           }
@@ -534,5 +644,4 @@ class ContactsPage extends GetView<ContactsController> {
       },
     );
   }
-
 }

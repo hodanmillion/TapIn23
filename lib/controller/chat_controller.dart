@@ -84,6 +84,7 @@ RxBool isChatCreated = false.obs;
 
   String? get currentUserId => _getCurrentUserId;
   RxString groupId = ''.obs;
+
   RxString streetName = ''.obs;
 
   String? get getgroupId => groupId.value;
@@ -159,13 +160,10 @@ RxBool isChatCreated = false.obs;
   }
 
   void _manualCheckIn(Position position) {
-    // Implement your logic for manual check-in here.
-    // For example, update the user's location in the database.
-    // You may also update the UI or perform any other actions.
+
 
     print('Manual check-in at ${position.latitude}, ${position.longitude}');
 
-    // Set the location flag to true
     isLocationSet.value = true;
   }
 

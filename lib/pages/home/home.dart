@@ -1,23 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/controller/ContactController.dart';
-import 'package:myapp/controller/chat_controller.dart';
-import 'package:myapp/services/chat/chat_service.dart';
 import 'package:myapp/services/firestore/firestore.dart';
+import 'package:myapp/services/notification/notification.dart';
+import 'package:myapp/services/notification/notification_service.dart';
 import 'package:myapp/utils/colors.dart';
-import 'package:myapp/utils/spHelper.dart';
 import 'package:provider/provider.dart';
-
 import '../../controller/UserController.dart';
 import '../../routes/app_route.dart';
 import '../../services/auth/auth_service.dart';
+import '../../services/notification/notification2.dart';
 import '../AddContactScreen.dart';
 import '../contacts_page.dart';
 import '../past_chats_page.dart';
@@ -115,8 +112,7 @@ class _HomePageNewState extends State<HomePageNew> {
         ],
       ),
       actions: [
-/*        _proIcon(),
-        const SizedBox(width: 4),*/
+
         IconButton(
           onPressed: signOut,
           icon: const Icon(Icons.logout, color: AppColors.primaryColor),
@@ -249,11 +245,6 @@ class _HomePageNewState extends State<HomePageNew> {
       controller.isMainUSerP.value = "";
       controller.userIdP.value = "";
       print('sign out');
-      // Get.find<UserController>().dispose();
-      // Get.find<ContactsController>().dispose();
-
-      // Get.find<ChatController>().dispose();
-      
     } catch (error) {
       print("Failed to sign out: $error");
     }
@@ -262,27 +253,10 @@ class _HomePageNewState extends State<HomePageNew> {
   @override
   void initState() {
     super.initState();
-
     fetchFriendRequests();
     getUserDataInfo();
+    AppNotification().initMessaging();
     contactController.fetchAcceptedContacts();
-/*      if (AppSharedPrefs.notificationData.isfriend!.isNotEmpty) {
-        var param = {
-          "receiverUserEmail": AppSharedPrefs.notificationData.receiverUserEmail.toString(),
-          "receiverUserID": AppSharedPrefs.notificationData.receiverUserID.toString(),
-          "senderId": AppSharedPrefs.notificationData.senderId.toString(),
-        };
-
-        print("mtzinfotecg=h${param}");
-        Get.toNamed(PageConst.chatView, parameters: param);
-        AppSharedPrefs.notificationData.isfriend!.toLowerCase() == '';
-      }
-      print('ak');*/
-    // getuserStatus();
-    //  controller.requestLocationPermission(_auth!.currentUser!.uid);
-
-    // Update user's location when the app starts
-    //final user = _auth.currentUser;
   }
 
   @override
@@ -329,15 +303,4 @@ class _HomePageNewState extends State<HomePageNew> {
       ),
     );
   }
-
-/*  Future<void> getuserStatus() async {
-    var param = {
-      "receiverUserEmail": AppSharedPrefs.notificationData.receiverUserEmail.toString(),
-      "receiverUserID": AppSharedPrefs.notificationData.receiverUserID.toString(),
-      "senderId": AppSharedPrefs.notificationData.senderId.toString(),
-    };
-    AppSharedPrefs.spClean();
-
-    await Get.toNamed(PageConst.chatView, parameters: param);
-  }*/
 }
