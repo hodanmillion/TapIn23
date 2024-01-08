@@ -140,40 +140,28 @@ Widget build(BuildContext context) {
             .set({'isTyping': visible});*/
           return const SizedBox();
         });
-          return FutureBuilder(
-            future: FirestoreDB().getUserData(controller.receiverUserID.value),
-            builder: (context, snapshot) {
-              List<String> ids = [controller.firebaseAuth!.currentUser!.uid, controller.receiverUserID.value];
-              ids.sort();
-              String chatRoomId = ids.join("_");
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: SizedBox(),
-                );
-              } else if (snapshot.hasError) {
-                return const Center(
-                  child: Text('Failed to fetch data'),
-                );
-              } else if (snapshot.data != null &&
-                  snapshot.data is Map<String, dynamic>) {
-                // Check if snapshot.data is not null and is of the expected type
-                Map<String, dynamic> userData =
-                    snapshot.data as Map<String, dynamic>;
-                profileImage.value = userData['proImage'] ?? '';
+          return InkWell(
+            onTap: () {
+              controller.emailP.value = controller.email.value ?? '';
+              controller.userNameP.value = controller.username.isNotEmpty ? controller.username.value  : controller.email.value.split('@').first ?? "";
+              controller.userImageP.value = controller.userurl.value ?? '';
 
-                // Now you can safely access userData properties
-                return InkWell(
-                  onTap: () {
-                    controller.emailP.value = (userData['email'] as String?) ?? '';
-                    controller.userNameP.value = userData['username'] ?? userData['email'].toString().split('@').first ?? "";
-                    controller.userImageP.value = userData['proImage'] ?? '';
+              Get.toNamed(PageConst.userPrivateProfilePage);
+            },
+            child: Row(
+              children: [
+                (controller.userurl.value.isNotEmpty)
+                    ? ClipOval(
 
-                    Get.toNamed(PageConst.userPrivateProfilePage);
-                  },
-                  child: Row(
-                    children: [
-                      (userData['proImage'] != null)
-                          ? Container(
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                    fit: BoxFit.cover,
+                    imageUrl: controller.userurl.value,
+                    width: 40.0,
+                    height: 40.0,
+                  ),
+                )/*Container(
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(color: AppColors.imageBorder,borderRadius: BorderRadius.circular(25)),
@@ -192,70 +180,62 @@ Widget build(BuildContext context) {
                                   ),
                                 ),
                             ),
-                          )
-                          : const Icon(Icons.person_outline),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            userData['username'] ?? userData['email'].toString().split("@")[0],
-                            style: const TextStyle(color: AppColors.primaryColor,fontSize: 17,fontWeight: FontWeight.w600),
-                          ),
-                          StreamBuilder(
+                          )*/
+                    : const Icon(Icons.person_outline),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.username.value.isNotEmpty ? controller.username.value : controller.email.value.split("@")[0],
+                      style: const TextStyle(color: AppColors.primaryColor,fontSize: 17,fontWeight: FontWeight.w600),
+                    ),
+                    StreamBuilder(
 
-                            stream: controller.userDataStream(chatRoomId),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(
-                                  child: SizedBox(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return const Center(
-                                  child: Text(''),
-                                );
-                              } else if (snapshot.data!.data() != null) {
-                                // Check if snapshot.data is not null and is of the expected type
-                                Map<String, dynamic> userData =
+                      stream: controller.userDataStream(controller.groupChatId.value),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: SizedBox(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Center(
+                            child: Text(''),
+                          );
+                        } else if (snapshot.data!.data() != null) {
+                          // Check if snapshot.data is not null and is of the expected type
+                          Map<String, dynamic> userData =
 
-                                snapshot.data!.data() as Map<String, dynamic>;
-                                profileImage.value = userData['proImage'] ?? '';
+                          snapshot.data!.data() as Map<String, dynamic>;
+                          profileImage.value = userData['proImage'] ?? '';
 
-                                // Now you can safely access userData properties
-                                return Obx(
-                                      () {
-                                    // Your logic for displaying the typing indicator
-                                    if (userData[controller.receiverUserID.value] ?? false) {
-                                      return const Text(
-                                        'typing...',
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 14
-                                        ),
-                                      );
-                                    } else {
-                                      return Container(); // Or you can return null
-                                    }
-                                  },
+                          // Now you can safely access userData properties
+                          return Obx(
+                                () {
+                              // Your logic for displaying the typing indicator
+                              if (userData[controller.receiverUserID.value] ?? false) {
+                                return const Text(
+                                  'typing...',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14
+                                  ),
                                 );
                               } else {
-                                // Handle the case when snapshot.data is null or of unexpected type
-                                return const SizedBox();
+                                return Container(); // Or you can return null
                               }
                             },
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else {
-                // Handle the case when snapshot.data is null or of unexpected type
-                return const Center(
-                  child: Text('Account Deleted'),
-                );
-              }
-            },
+                          );
+                        } else {
+                          // Handle the case when snapshot.data is null or of unexpected type
+                          return const SizedBox();
+                        }
+                      },
+                    )
+                  ],
+                ),
+              ],
+            ),
           );
         }
       ),
@@ -535,7 +515,7 @@ Widget build(BuildContext context) {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           document.senderId == currentUserUid ? const SizedBox() :
-                          controller.userurl.value != "" ?  GestureDetector(
+                          controller.userurl.value.isNotEmpty ?  GestureDetector(
                             onTap: () {
                               controller.emailP.value = controller.email.value ?? '';
                               controller.userNameP.value = controller.username.value  != "" ? controller.username.value : controller.email.value.split("@")[0] ;
@@ -543,7 +523,17 @@ Widget build(BuildContext context) {
 
                               Get.toNamed(PageConst.userPrivateProfilePage);
                             },
-                            child: Container(
+                            child: ClipOval(
+
+                              child: CachedNetworkImage(
+                                placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                                fit: BoxFit.cover,
+                                imageUrl: controller.userurl.value,
+                                width: 45.0,
+                                height: 45.0,
+                              ),
+                            )/*Container(
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),
@@ -562,7 +552,7 @@ Widget build(BuildContext context) {
                                   ),
                                 ),
                               ),
-                            ),
+                            )*/,
                           ) : GestureDetector(
                             onTap: () {
                               controller.emailP.value = controller.email.value ?? '';
@@ -989,6 +979,7 @@ void _handleSubmitted(String text) async {
     );*/
 
     await sendNotificationMessageToPeerUser(
+
       peerUserToken: token,
       myName: 'Messageee from $senderUsername',
       textFromTextField: text.isNotEmpty ? text : controller.selectedGifUrl.value,
@@ -1043,6 +1034,10 @@ void _handleSubmitted(String text) async {
 
   Future<void> sendNotificationMessageToPeerUser(
       {textFromTextField, myName,  peerUserToken}) async {
+    String userImage =
+    await getUserImage(controller.firebaseAuth!.currentUser!.uid);
+    String userName =
+    await getUsername(controller.firebaseAuth!.currentUser!.uid);
     await Dio().post(
       'https://fcm.googleapis.com/v1/projects/tappedin-95539/messages:send?access_token=${controller.accessToken.value}',
       options: Options(
@@ -1064,6 +1059,8 @@ void _handleSubmitted(String text) async {
               'receiverUserEmail': controller.receiverUserEmail.value,
               'receiverUserID': controller.firebaseAuth!.currentUser!.uid,
               'senderId': controller.receiverUserID.value,
+              "image" : userImage,
+              "username" : userName
             },
             "android": {
               "notification": {
@@ -1095,6 +1092,21 @@ void _handleSubmitted(String text) async {
     DocumentSnapshot docData = await userData.doc(uid).get();
     if (docData.exists) {
       return docData['token'];
+    }
+    return '';
+  }
+  Future<String> getUserImage(String uid) async {
+    CollectionReference userData = _firestoreInstance.collection('users');
+    DocumentSnapshot docData = await userData.doc(uid).get();
+    if (docData.exists) {
+      return docData['proImage'];
+    }
+    return '';
+  }  Future<String> getUsername(String uid) async {
+    CollectionReference userData = _firestoreInstance.collection('users');
+    DocumentSnapshot docData = await userData.doc(uid).get();
+    if (docData.exists) {
+      return docData['username'];
     }
     return '';
   }

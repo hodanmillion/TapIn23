@@ -283,15 +283,20 @@ class _PublicChatProfilePageState extends State<PublicChatProfilePage> {
   }
 
   Future<void> setPlaceMark(double latitude, double longitude) async {
-    final List<Placemark> placemarks =
-    await placemarkFromCoordinates(latitude, longitude);
-    if (placemarks.isNotEmpty) {
-      final Placemark placemark = placemarks.first;
-      final String address =
-          "${placemark.locality}, ${placemark.administrativeArea}";
-      userLocation.value = address;
-      print(userLocation.value);
+    try{
+      final List<Placemark> placemarks =
+      await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        final Placemark placemark = placemarks.first;
+        final String address =
+            "${placemark.locality}, ${placemark.administrativeArea}";
+        userLocation.value = address.isEmpty ? " " : address;
+        print(userLocation.value);
+      }
+    } catch  (e){
+      userLocation.value = "";
     }
+
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> userLocationStreem(String uid) {

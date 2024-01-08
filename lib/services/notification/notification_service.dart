@@ -156,6 +156,8 @@ class AppNotification {
         "receiverUserEmail":   message.data['receiverUserEmail'],
         "receiverUserID":  message.data['receiverUserID'],
         "senderId":  message.data['senderId'],
+        "image": message.data['image'],
+        "username": message.data['username'],
       };
       Get.toNamed(PageConst.chatView, parameters: param);
     }

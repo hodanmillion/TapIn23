@@ -257,6 +257,7 @@ class _HomePageNewState extends State<HomePageNew> {
     getUserDataInfo();
     AppNotification().initMessaging();
     contactController.fetchAcceptedContacts();
+    contactController.getContacts();
   }
 
   @override

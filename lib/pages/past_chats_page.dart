@@ -12,7 +12,6 @@ class PastChatListPage extends GetView<ChatController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.getUserLocation();
     return Scaffold(
         body: Obx(
           () => controller.groupListModel.isEmpty

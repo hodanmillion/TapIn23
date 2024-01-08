@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myapp/pages/auto_generated_chat_page.dart';
 import 'package:myapp/utils/colors.dart';
+import 'package:http/http.dart' as http;
 
 import '../pages/publicChatProfile.dart';
 
@@ -42,6 +44,7 @@ class _MessageTileState extends State<MessageTile> {
   RxString userurl = "".obs;
   RxString email = "".obs;
   RxInt color = 0.obs;
+  RxBool imageReady = false.obs;
   @override
   void initState() {
     // TODO: implement initState
@@ -100,7 +103,17 @@ class _MessageTileState extends State<MessageTile> {
                   Get.to(PublicChatProfilePage(email: emailP.value,name: userNameP.value,image: userImageP.value,userId: userId.value,onFriendRequestSent: onFriendRequestSent));
                 },
 
-                child: Container(
+                child: ClipOval(
+
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                    fit: BoxFit.cover,
+                    imageUrl: userurl.value,
+                    width: 35.0,
+                    height: 35.0,
+                  ),
+                )/*Container(
                   decoration: BoxDecoration(
                     color: AppColors.imageBorder,
                     borderRadius: BorderRadius.circular(25),
@@ -122,7 +135,7 @@ class _MessageTileState extends State<MessageTile> {
                       ),
                     ),
                   ),
-                ),
+                )*/,
           ) : Container(
                 width: 35,
                 height: 35,

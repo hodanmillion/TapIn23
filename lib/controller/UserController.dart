@@ -94,6 +94,7 @@ class UserController extends GetxController {
       }
     } catch (e) {
       print('Error retrieving user location: $e');
+      userAppLocation.value = "";
     }
   }
 

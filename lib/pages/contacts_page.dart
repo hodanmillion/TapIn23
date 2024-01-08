@@ -322,7 +322,8 @@ class _ContactsPageState extends State<ContactsPage> {
                     "receiverUserEmail": controller.contact[index].email,
                     "receiverUserID": controller.contact[index].contactId,
                     "senderId": controller.firebaseAuth.currentUser!.uid,
-
+                    "image": controller.contact[index].profileImg,
+                    "username": controller.contact[index].username,
                   };
                   Get.toNamed(PageConst.chatView, parameters: param);
                 },
@@ -439,7 +440,18 @@ class _ContactsPageState extends State<ContactsPage> {
                   //   )
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal:  5.0),
-                    child: Container(
+                    child: /*ClipOval(
+
+                      child: CachedNetworkImage(
+                        placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                        fit: BoxFit.cover,
+                        imageUrl: controller.contact[index].profileImg,
+                        width: 45.0,
+                        height: 45.0,
+                      ),
+                    ),*/
+                    Container(
                       width: 45,
                       height: 45,
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: AppColors.imageBorder),

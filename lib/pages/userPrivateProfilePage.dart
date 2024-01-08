@@ -160,47 +160,47 @@ class _UserPrivateProfilePageState extends State<UserPrivateProfilePage> {
                         ),
                       ),
 
-                      StreamBuilder(
-
-                        stream: prController.userLocationStreem(prController.receiverUserID.value),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Center(
-                              child: Text('Failed to fetch data'),
-                            );
-                          } else if (snapshot.data != null) {
-                            // Check if snapshot.data is not null and is of the expected type
-                            Map<String, dynamic> userData =
-                            snapshot.data!.data() as Map<String, dynamic>;
-                            // prController.userLocation.value = userData['location'] ?? '';
-                            GeoPoint? location = userData['location'] as GeoPoint?;
-                            final double latitude = location!.latitude;
-                            final double longitude = location.longitude;
-                            setPlaceMark(latitude,longitude);
-
-                            // Now you can safely access userData properties
-                            return Obx(
-                                  () => tile(
-                                      title: "Location",
-                                      subTitle: prController.userLocation.value),
-                            );
-                          } else {
-                            // Handle the case when snapshot.data is null or of unexpected type
-                            return const Center(
-                              child: Text('Account Deleted'),
-                            );
-                          }
-                        },
-                      ),
-                    /*  Obx(
+                      // StreamBuilder(
+                      //
+                      //   stream: prController.userLocationStreem(prController.receiverUserID.value),
+                      //   builder: (context, snapshot) {
+                      //     if (snapshot.connectionState == ConnectionState.waiting) {
+                      //       return const Center(
+                      //         child: CircularProgressIndicator(),
+                      //       );
+                      //     } else if (snapshot.hasError) {
+                      //       return const Center(
+                      //         child: Text('Failed to fetch data'),
+                      //       );
+                      //     } else if (snapshot.data != null) {
+                      //       // Check if snapshot.data is not null and is of the expected type
+                      //       Map<String, dynamic> userData =
+                      //       snapshot.data!.data() as Map<String, dynamic>;
+                      //       // prController.userLocation.value = userData['location'] ?? '';
+                      //       GeoPoint? location = userData['location'] as GeoPoint?;
+                      //       final double latitude = location!.latitude;
+                      //       final double longitude = location.longitude;
+                      //       setPlaceMark(latitude,longitude);
+                      //
+                      //       // Now you can safely access userData properties
+                      //       return Obx(
+                      //             () => tile(
+                      //                 title: "Location",
+                      //                 subTitle: prController.userLocation.value),
+                      //       );
+                      //     } else {
+                      //       // Handle the case when snapshot.data is null or of unexpected type
+                      //       return const Center(
+                      //         child: Text('Account Deleted'),
+                      //       );
+                      //     }
+                      //   },
+                      // ),
+                      Obx(
                         () => tile(
                             title: "Location",
                             subTitle: prController.userLocation.value),
-                      ),*/
+                      ),
                     ],
                   )),
             ),
@@ -236,7 +236,7 @@ class _UserPrivateProfilePageState extends State<UserPrivateProfilePage> {
     );
   }
 
-  Future<void> setPlaceMark(double latitude, double longitude) async {
+/*  Future<void> setPlaceMark(double latitude, double longitude) async {
     final List<Placemark> placemarks =
         await placemarkFromCoordinates(latitude, longitude);
     if (placemarks.isNotEmpty) {
@@ -246,4 +246,5 @@ class _UserPrivateProfilePageState extends State<UserPrivateProfilePage> {
       prController.userLocation.value = address;
       print(prController.userLocation.value);
     }
-  }}
+  }*/
+}

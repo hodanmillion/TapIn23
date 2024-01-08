@@ -21,6 +21,7 @@ class PrivateChatController extends GetxController {
   RxString username = "".obs;
   RxString userurl = "".obs;
   RxString email = "".obs;
+  RxString groupChatId = "".obs;
   // RxList<String> messagesId = RxList<String>();
   RxBool isSendMessage = false.obs;
   final messageController = TextEditingController().obs;
@@ -113,12 +114,12 @@ void clearSelectedImageUrl() {
         .snapshots();
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> userLocationStreem(String uid) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .snapshots();
-  }
+  // Stream<DocumentSnapshot<Map<String, dynamic>>> userLocationStreem(String uid) {
+  //   return FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(uid)
+  //       .snapshots();
+  // }
 
   getMessages(String userId, String otherUserId) {
     List<String> ids = [userId, otherUserId];
@@ -146,19 +147,7 @@ void clearSelectedImageUrl() {
     // messagesId.bindStream(messageId);
     messages.bindStream(message);
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(otherUserId)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        final test = documentSnapshot.data() as Map;
-        username.value  = test['username'] ?? "";
-        userurl.value  = test['proImage'] ?? "";
-        email.value  = test['email'] ?? "";
-       }
 
-    });
   }
 
   Future<void> getUserLocation(String userId) async {
@@ -177,11 +166,12 @@ void clearSelectedImageUrl() {
           final Placemark placemark = placemarks.first;
           final String address =
               "${placemark.locality}, ${placemark.administrativeArea}";
-          userLocation.value = address;
+          userLocation.value = address.isEmpty ? "" : address;
         }
       }
     } catch (e) {
       print('Error retrieving user location: $e');
+      userLocation.value = "";
     }
   }
 
@@ -279,7 +269,7 @@ void clearSelectedImageUrl() {
             .doc(doc)
             .collection('contacts')
             .doc(currentUserUid)
-            .update({"time":timestamp});
+            .update({"time":timestamp,"isRead":false});
         FirebaseFirestore.instance
             .collection('accepted_c')
             .doc(currentUserUid)
@@ -344,7 +334,10 @@ void clearSelectedImageUrl() {
     // AppSharedPrefs.spClean();
     receiverUserID.value = Get.parameters["receiverUserID"] != null ? Get.parameters["receiverUserID"]! : "" ;
     receiverUserEmail.value = Get.parameters["receiverUserEmail"] != null ? Get.parameters["receiverUserEmail"]! : "" ;
-    senderId.value = Get.parameters["senderId"] != null ? Get.parameters["senderId"]! : "" ;
+    senderId.value = Get.parameters["senderId"] != null ? Get.parameters["senderId"]! : "";
+    username.value = Get.parameters["username"] != null ? Get.parameters["username"]! : "";
+    userurl.value = Get.parameters["image"] != null ? Get.parameters["image"]! : "";
+    email.value = Get.parameters["receiverUserEmail"] != null ? Get.parameters["receiverUserEmail"]! : "";
     getAccessToken();
     getMessages(firebaseAuth!.currentUser!.uid, receiverUserID.value);
     // getUserLocation(receiverUserID.value);
@@ -352,6 +345,11 @@ void clearSelectedImageUrl() {
       doc: receiverUserID.value,
       isRead: true,
     );
+
+    List<String> ids = [firebaseAuth!.currentUser!.uid, receiverUserID.value];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+    groupChatId.value = chatRoomId;
 
     fetchGifs();
   }
